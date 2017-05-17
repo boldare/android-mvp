@@ -4,7 +4,7 @@ public abstract class Presenter<VIEW> {
 
     protected VIEW view;
 
-    protected void setView(VIEW view) {
+    public void setView(VIEW view) {
         this.view = view;
     }
 

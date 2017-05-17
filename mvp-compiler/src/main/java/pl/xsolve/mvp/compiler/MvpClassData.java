@@ -1,22 +1,28 @@
 package pl.xsolve.mvp.compiler;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 
 import pl.xsolve.mvp.api.MvpPresenter;
 
 import static com.google.auto.common.MoreElements.getPackage;
-import static pl.xsolve.mvp.compiler.MvpProcessor.BINDER_NAME;
 
 class MvpClassData {
+    private static final String BINDER_NAME = "MvpActivityBinder";
     private final TypeElement typeElement;
-    Map<String, Element> viewStateElements = new HashMap<>();
-    Set<Element> presenterElements = new HashSet<>();
+    private final Map<String, Element> viewStateElements = new HashMap<>();
+    private final Set<Element> presenterElements = new HashSet<>();
 
     MvpClassData(TypeElement typeElement) {
         this.typeElement = typeElement;
@@ -35,58 +41,58 @@ class MvpClassData {
         return getPackage(typeElement).getQualifiedName().toString();
     }
 
-    String getClassName() {
+    String getBinderClassName() {
         String packageName = getPackageName();
         String enclosingClassName = typeElement.getQualifiedName().toString().substring(
                 packageName.length() + 1).replace('.', '$');
         return enclosingClassName + "$" + BINDER_NAME;
     }
 
-    String getCanonicalClassName() {
+    String getActivityClassName() {
         String packageName = getPackageName();
-        String className = getClassName();
-        return new StringBuilder(packageName)
-                .append(".")
-                .append(className)
-                .toString();
+        return typeElement.getQualifiedName().toString().substring(
+                packageName.length() + 1);
     }
 
-    public void write(StringBuilder builder) {
-        builder.append("package ").append(getPackageName()).append(";\n")
-                .append("public class ").append(getClassName())
-                .append("{\n}");
-        builder.append("//").append(typeElement.getQualifiedName().toString()).append("\n");
-        builder.append("//").append(typeElement.getSimpleName().toString()).append("\n");
-        builder.append("//").append(typeElement.getNestingKind().isNested()).append("\n");
-        builder.append("//").append(typeElement.getNestingKind().toString()).append("\n");
-        if (typeElement.getNestingKind().isNested()) {
-            builder.append("//\t")
-                    .append(typeElement.getEnclosingElement().getSimpleName().toString())
-                    .append("\n");
+    List<MvpBinding> getBindings() {
+        List<MvpBinding> bindings = new ArrayList<>();
+        presenterElements.stream()
+                .sorted(
+                        Comparator.comparing(element -> element.getSimpleName().toString())
+                )
+                .forEach(
+                        presenterElement -> {
+                            Optional<Element> viewElement = findViewStateFor(presenterElement);
+                            if (viewElement.isPresent()) {
+                                bindings.add(new MvpBinding(presenterElement, viewElement.get()));
+                            }
+                        }
+                );
+        return bindings;
+    }
+
+    private Optional<Element> findViewStateFor(Element presenterElement) {
+        String viewStateElementName = presenterElement.getAnnotation(MvpPresenter.class).viewState();
+        Optional<Element> viewStateElement = viewStateElements.values().stream()
+                .filter(element -> viewStateElementName.contentEquals(element.getSimpleName()))
+                .findFirst();
+        return viewStateElement;
+    }
+
+    static class MvpBinding {
+        final Element presenter;
+        final Element viewState;
+
+        MvpBinding(Element presenter, Element viewState) {
+            this.presenter = presenter;
+            this.viewState = viewState;
         }
-        builder.append("//viewStates:").append("\n");
-        viewStateElements.entrySet().stream().forEach(entry -> {
-            Element element = entry.getValue();
-            append(builder, element);
-        });
-        builder.append("//presenters:").append("\n");
-        presenterElements.stream().forEach(element -> {
-            appendPresenter(builder, element);
-        });
-    }
 
-    private void append(StringBuilder builder, Element element) {
-        String objectType = element.getSimpleName().toString();
-
-        builder.append("//\t").append(objectType)
-                .append("\n");
-    }
-
-    private void appendPresenter(StringBuilder builder, Element element) {
-        append(builder, element);
-        String viewState = element.getAnnotation(MvpPresenter.class).viewState();
-        builder.append("//\t\tviewState - ")
-                .append(viewState)
-                .append("\n");
+        public TypeMirror getViewType() {
+            DeclaredType presenterType = (DeclaredType) presenter.asType();
+            TypeElement presenterTypeElement = (TypeElement) presenterType.asElement();
+            DeclaredType supertype = (DeclaredType) presenterTypeElement.getSuperclass();
+            return supertype.getTypeArguments().get(0);
+        }
     }
 }

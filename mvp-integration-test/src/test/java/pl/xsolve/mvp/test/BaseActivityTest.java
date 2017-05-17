@@ -1,4 +1,4 @@
-package pl.xsolve.mvp;
+package pl.xsolve.mvp.test;
 
 import android.os.Bundle;
 
@@ -14,12 +14,18 @@ import org.robolectric.ShadowActivity;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.internal.ShadowExtractor;
+import org.robolectric.shadow.api.Shadow;
 
 import javax.inject.Inject;
 
 import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
+import pl.xsolve.mvp.BaseActivity;
+import pl.xsolve.mvp.Presenter;
+import pl.xsolve.mvp.ViewState;
+import pl.xsolve.mvp.api.MvpPresenter;
+import pl.xsolve.mvp.api.MvpViewState;
 import pl.xsolve.mvp.dagger.BaseActivityComponent;
 import pl.xsolve.mvp.dagger.BaseActivityModule;
 import pl.xsolve.mvp.dagger.BaseComponent;
@@ -273,8 +279,10 @@ public class BaseActivityTest {
 
     public static class TestBaseActivity extends BaseActivity {
         @Inject
+        @MvpPresenter(viewState = "viewState")
         TestPresenter presenter;
         @Inject
+        @MvpViewState
         TestViewState viewState;
 
         @Override
@@ -351,7 +359,7 @@ public class BaseActivityTest {
 
         activityController = Robolectric.buildActivity(TestBaseActivity.class);
         systemUnderTest = activityController.get();
-        shadowActivity = (ShadowActivity) ShadowExtractor.extract(systemUnderTest);
+        shadowActivity = Shadow.extract(systemUnderTest);
         shadowActivity.setLastNonConfigurationInstance(nci);
         activityController.create(outState).start().restoreInstanceState(outState).resume();
     }

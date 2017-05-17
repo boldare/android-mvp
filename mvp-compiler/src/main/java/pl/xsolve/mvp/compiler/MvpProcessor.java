@@ -19,19 +19,20 @@ import pl.xsolve.mvp.api.MvpViewState;
 @AutoService(Processor.class)
 public class MvpProcessor extends AbstractProcessor {
 
-    static final String BINDER_SUPERCLASS_PACKAGE = "pl.xsolve.mvp";
-    static final String BINDER_SUPERCLASS_NAME = "MvpBinder.ActivityBinder";
-    static final String BINDER_SUPERCLASS_CANONICAL_NAME =
-            BINDER_SUPERCLASS_PACKAGE + "." + BINDER_SUPERCLASS_NAME;
-    static final String BINDER_NAME = "MvpActivityBinder";
 
     private Collector collector = new Collector();
     private MvpClassWriter mvpClassWriter;
+    private MvpBinderWriter mvpBinderWriter;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnvironment) {
         super.init(processingEnvironment);
+        initWriters(processingEnvironment);
+    }
+
+    private void initWriters(ProcessingEnvironment processingEnvironment) {
         mvpClassWriter = new MvpClassWriter(processingEnvironment);
+        mvpBinderWriter = new MvpBinderWriter(processingEnvironment);
     }
 
     @Override
@@ -69,5 +70,6 @@ public class MvpProcessor extends AbstractProcessor {
         collector.getClassesData()
                 .forEach(mvpClassData -> mvpClassWriter.write(mvpClassData));
 
+        mvpBinderWriter.write(collector.getClassesData());
     }
 }

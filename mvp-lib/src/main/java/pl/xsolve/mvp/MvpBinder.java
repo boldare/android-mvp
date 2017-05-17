@@ -5,10 +5,12 @@ import java.util.Map;
 
 public class MvpBinder {
 
+    public static final String BINDER_CANONICAL_NAME = "pl.xsolve.mvp.MvpBinder$StaticBindings";
+
     static {
         try {
             //initialize static generated class
-            Class.forName("pl.xsolve.mvp.MvpBinder$StaticBindings");
+            Class.forName(BINDER_CANONICAL_NAME);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -49,6 +51,9 @@ public class MvpBinder {
 
     public static abstract class ActivityBinder {
         public abstract void bind(BaseActivity activity);
+        protected MvpController getController(BaseActivity activity) {
+            return activity.mvpController;
+        }
 
         private static ActivityBinder EMPTY = new ActivityBinder() {
             @Override

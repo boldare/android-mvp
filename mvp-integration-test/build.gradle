@@ -30,5 +30,7 @@ dependencies {
 
     annotationProcessor "com.google.dagger:dagger-compiler:2.10"
     testAnnotationProcessor "com.google.dagger:dagger-compiler:2.10"
+    annotationProcessor project(':mvp-compiler')
+    testAnnotationProcessor project(':mvp-compiler')
     provided 'javax.annotation:jsr250-api:1.0'
 }
