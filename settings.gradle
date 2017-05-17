@@ -1,1 +1,1 @@
-include ':app', ':mvp-lib', ':mvp-integration-test'
+include ':app', ':mvp-lib', ':mvp-integration-test', ':mvp-api', ':mvp-compiler'
