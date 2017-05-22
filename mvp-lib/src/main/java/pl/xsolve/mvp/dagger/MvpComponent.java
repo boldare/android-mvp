@@ -9,9 +9,9 @@ import dagger.Component;
 @Singleton
 @Component(
         modules = {
-                AppModule.class,
+                MvpAppModule.class,
         }
 )
-public interface BaseComponent {
+public interface MvpComponent {
     Context appContext();
 }

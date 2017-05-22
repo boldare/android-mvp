@@ -5,15 +5,15 @@ import android.support.v7.app.AppCompatActivity;
 
 import javax.inject.Inject;
 
-import pl.xsolve.mvp.dagger.BaseActivityComponent;
-import pl.xsolve.mvp.dagger.BaseComponentFactory;
-import pl.xsolve.mvp.dagger.DaggerBaseActivityComponent;
+import pl.xsolve.mvp.dagger.MvpActivityComponent;
+import pl.xsolve.mvp.dagger.MvpComponentFactory;
+import pl.xsolve.mvp.dagger.DaggerMvpActivityComponent;
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class MvpActivity extends AppCompatActivity {
     @Inject
     MvpController mvpController;
 
-    private BaseActivityComponent daggerComponent;
+    private MvpActivityComponent daggerComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,16 +32,16 @@ public abstract class BaseActivity extends AppCompatActivity {
      *
      * @param component - Dagger component returned previously in createComponent method
      */
-    protected void inject(BaseActivityComponent component) {
+    protected void inject(MvpActivityComponent component) {
         component.inject(this);
     }
 
-    private BaseActivityComponent getComponent() {
+    private MvpActivityComponent getComponent() {
         if (daggerComponent == null) {
             Object nci = getLastCustomNonConfigurationInstance();
 
-            if (nci != null && nci instanceof BaseActivityComponent) {
-                daggerComponent = (BaseActivityComponent) nci;
+            if (nci != null && nci instanceof MvpActivityComponent) {
+                daggerComponent = (MvpActivityComponent) nci;
             } else {
                 daggerComponent = createComponent();
             }
@@ -49,9 +49,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         return daggerComponent;
     }
 
-    protected BaseActivityComponent createComponent() {
-        return DaggerBaseActivityComponent.builder()
-                .baseComponent(new BaseComponentFactory().get())
+    protected MvpActivityComponent createComponent() {
+        return DaggerMvpActivityComponent.builder()
+                .mvpComponent(new MvpComponentFactory().get())
                 .build();
     }
 

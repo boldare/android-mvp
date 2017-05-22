@@ -7,16 +7,16 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import pl.xsolve.mvp.BaseActivity;
+import pl.xsolve.mvp.MvpActivity;
 import pl.xsolve.mvp.R;
 import pl.xsolve.mvp.api.MvpPresenter;
 import pl.xsolve.mvp.api.MvpViewState;
-import pl.xsolve.mvp.dagger.BaseActivityComponent;
-import pl.xsolve.mvp.dagger.BaseComponentFactory;
+import pl.xsolve.mvp.dagger.MvpActivityComponent;
+import pl.xsolve.mvp.dagger.MvpComponentFactory;
 import pl.xsolve.mvp.sample.dagger.DaggerSampleComponent;
 import pl.xsolve.mvp.sample.dagger.SampleComponent;
 
-public class SampleActivity extends BaseActivity {
+public class SampleActivity extends MvpActivity {
 
     @Inject
     @MvpPresenter(viewState = "sampleViewState")
@@ -49,14 +49,14 @@ public class SampleActivity extends BaseActivity {
     }
 
     @Override
-    protected BaseActivityComponent createComponent() {
+    protected MvpActivityComponent createComponent() {
         return DaggerSampleComponent.builder()
-                .baseComponent(new BaseComponentFactory().get())
+                .mvpComponent(new MvpComponentFactory().get())
                 .build();
     }
 
     @Override
-    protected void inject(BaseActivityComponent component) {
+    protected void inject(MvpActivityComponent component) {
         ((SampleComponent)component).inject(this);
     }
 }
