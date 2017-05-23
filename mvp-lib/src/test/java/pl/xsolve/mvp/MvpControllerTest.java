@@ -143,5 +143,4 @@ public class MvpControllerTest {
 
     private static class TestViewState extends ViewState<TestViewInterface> implements TestViewInterface {
     }
-
 }

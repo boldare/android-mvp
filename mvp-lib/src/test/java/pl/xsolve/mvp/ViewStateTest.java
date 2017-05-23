@@ -43,5 +43,4 @@ public class ViewStateTest {
 
     private static class TestViewState extends ViewState<TestViewInterface> {
     }
-
 }

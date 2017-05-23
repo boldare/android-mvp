@@ -2,7 +2,6 @@ package pl.xsolve.mvp.dagger;
 
 import android.app.Application;
 
-
 public class BaseComponentFactory {
     private static BaseComponent sBaseComponent;
 
