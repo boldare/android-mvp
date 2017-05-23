@@ -8,8 +8,15 @@ import java.util.stream.Stream;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
-public class Collector {
+class Collector {
     private final Map<String, MvpClassData> classesData = new HashMap<>();
+
+    Stream<MvpClassData> getClassesData() {
+        return classesData.entrySet()
+                .stream()
+                .sorted(Comparator.comparing(Map.Entry::getKey))
+                .map(Map.Entry::getValue);
+    }
 
     void collectViewState(Element element) {
         MvpClassData mvpClassData = getClassDataFor(element);
@@ -19,13 +26,6 @@ public class Collector {
     void collectPresenter(Element element) {
         MvpClassData mvpClassData = getClassDataFor(element);
         mvpClassData.collectPresenter(element);
-    }
-
-    Stream<MvpClassData> getClassesData() {
-        return classesData.entrySet()
-                .stream()
-                .sorted(Comparator.comparing(Map.Entry::getKey))
-                .map(Map.Entry::getValue);
     }
 
     private MvpClassData getClassDataFor(Element element) {

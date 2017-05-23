@@ -15,10 +15,15 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private BaseActivityComponent daggerComponent;
 
-    protected BaseActivityComponent createComponent() {
-        return DaggerBaseActivityComponent.builder()
-                .baseComponent(new BaseComponentFactory().get())
-                .build();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        inject(getComponent());
+        if (!mvpController.isInitialized()) {
+            initializeMvp();
+            mvpController.setInitialized();
+        }
+        mvpController.onCreate(savedInstanceState);
     }
 
     /**
@@ -44,23 +49,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         return daggerComponent;
     }
 
-    @Override
-    public Object onRetainCustomNonConfigurationInstance() {
-        return daggerComponent;
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        inject(getComponent());
-        if (!mvpController.isInitialized()) {
-            initializeMvp();
-            mvpController.setInitialized();
-        }
-        mvpController.onCreate(savedInstanceState);
-    }
-
-    protected void injectView() {
+    protected BaseActivityComponent createComponent() {
+        return DaggerBaseActivityComponent.builder()
+                .baseComponent(new BaseComponentFactory().get())
+                .build();
     }
 
     private void initializeMvp() {
@@ -95,6 +87,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         mvpController.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return daggerComponent;
     }
 
     @Override

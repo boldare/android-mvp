@@ -2,35 +2,32 @@ package pl.xsolve.mvp.compiler;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
-import java.io.IOException;
-
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
 
-class MvpClassWriter {
-    static final String BINDER_SUPERCLASS_CANONICAL_NAME = "pl.xsolve.mvp.MvpBinder.ActivityBinder";
+class MvpClassWriter extends AbstractWriter<MvpClassData> {
+    private static final String BINDER_SUPERCLASS_CANONICAL_NAME = "pl.xsolve.mvp.MvpBinder.ActivityBinder";
 
-    private final ProcessingEnvironment processingEnvironment;
-
-    public MvpClassWriter(ProcessingEnvironment processingEnvironment) {
-        this.processingEnvironment = processingEnvironment;
+    MvpClassWriter(ProcessingEnvironment processingEnvironment) {
+        super(processingEnvironment);
     }
 
-    void write(MvpClassData mvpClassData) {
+    @Override
+    protected String getPackage(MvpClassData mvpClassData) {
+        return mvpClassData.getPackageName();
+    }
+
+    @Override
+    protected TypeSpec getTypeSpec(MvpClassData mvpClassData) {
         MethodSpec bindMethod = generateBindMethod(mvpClassData);
 
         TypeName superclass = generateSuperClass();
 
-        TypeSpec typeSpec = generateTypeSpec(mvpClassData, bindMethod, superclass);
-
-        JavaFile javaFile = generateJavaFile(mvpClassData, typeSpec);
-
-        writeFile(javaFile);
+        return generateTypeSpec(mvpClassData, bindMethod, superclass);
     }
 
     private MethodSpec generateBindMethod(MvpClassData mvpClassData) {
@@ -46,21 +43,23 @@ class MvpClassWriter {
     private CodeBlock generateBindingsCodeBlock(MvpClassData mvpClassData) {
         ClassName activity = ClassName.get(mvpClassData.getPackageName(), mvpClassData.getActivityClassName());
 
-        CodeBlock.Builder codeBlock = CodeBlock.builder()
+        CodeBlock.Builder codeBlockBuilder = CodeBlock.builder()
                 .addStatement("$T activity = ($T) baseActivity", activity, activity);
 
-        mvpClassData.getBindings().stream()
-                .forEach(mvpBinding -> {
+        mvpClassData.getBindings()
+                .stream()
+                .forEach(mvpBinding -> generateBindingStatement(mvpBinding, codeBlockBuilder));
 
-                    codeBlock.addStatement("getController(activity)\n" +
-                                    "  .managePresenter(activity.$L, $T.class)\n" +
-                                    "  .withViewState(activity.$L)",
-                            mvpBinding.presenter.getSimpleName(),
-                            mvpBinding.getViewType(),
-                            mvpBinding.viewState.getSimpleName());
-                });
+        return codeBlockBuilder.build();
+    }
 
-        return codeBlock.build();
+    private void generateBindingStatement(MvpClassData.MvpBinding mvpBinding, CodeBlock.Builder codeBlockBuilder) {
+        codeBlockBuilder.addStatement("getController(activity)\n" +
+                        "  .managePresenter(activity.$L, $T.class)\n" +
+                        "  .withViewState(activity.$L)",
+                mvpBinding.presenter.getSimpleName(),
+                mvpBinding.getViewType(),
+                mvpBinding.viewState.getSimpleName());
     }
 
     private ClassName generateSuperClass() {
@@ -74,20 +73,5 @@ class MvpClassWriter {
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(bindMethod)
                 .build();
-    }
-
-    private JavaFile generateJavaFile(MvpClassData mvpClassData, TypeSpec typeSpec) {
-        return JavaFile.builder(mvpClassData.getPackageName(), typeSpec)
-                .addFileComment("Generated code from MvpProcessor. Do not modify!")
-                .build();
-    }
-
-    private void writeFile(JavaFile javaFile) {
-        try {
-            javaFile.writeTo(processingEnvironment.getFiler());
-        } catch (IOException e) {
-            // Note: calling e.printStackTrace() will print IO errors
-            // that occur from the file already existing after its first run, this is normal
-        }
     }
 }

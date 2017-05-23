@@ -11,43 +11,46 @@ import java.util.stream.Stream;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
 
-public class MvpBinderWriter {
-    public static final String BINDER_CLASS_NAME = "MvpBinder$StaticBindings";
-    public static final String BINDER_PACKAGE_NAME = "pl.xsolve.mvp";
-    private final ProcessingEnvironment processingEnvironment;
+class MvpBinderWriter extends AbstractWriter<Stream<MvpClassData>> {
+    private static final String BINDER_CLASS_NAME = "MvpBinder$StaticBindings";
+    private static final String BINDER_PACKAGE_NAME = "pl.xsolve.mvp";
 
-    public MvpBinderWriter(ProcessingEnvironment processingEnvironment) {
-        this.processingEnvironment = processingEnvironment;
+    MvpBinderWriter(ProcessingEnvironment processingEnvironment) {
+        super(processingEnvironment);
     }
 
-    public void write(Stream<MvpClassData> mvpClassData) {
-        CodeBlock bindingCode = generateBindingCode(mvpClassData);
+    @Override
+    protected String getPackage(Stream<MvpClassData> mvpClassDataStream) {
+        return BINDER_PACKAGE_NAME;
+    }
 
-        TypeSpec typeSpec = generateTypeSpec(bindingCode);
+    @Override
+    protected TypeSpec getTypeSpec(Stream<MvpClassData> mvpClassDataStream) {
+        CodeBlock bindingCode = generateBindingCode(mvpClassDataStream);
 
-        JavaFile javaFile = generateJavaFile(typeSpec);
-
-        writeFile(javaFile);
+        return generateTypeSpec(bindingCode);
     }
 
     private CodeBlock generateBindingCode(Stream<MvpClassData> mvpClassDataStream) {
-        CodeBlock.Builder builder = CodeBlock.builder();
+        CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
         mvpClassDataStream.forEach(
-                mvpClassData -> {
-                    ClassName activity = ClassName.bestGuess(mvpClassData.getPackageName() + "." + mvpClassData.getActivityClassName());
-
-                    ClassName activityBinder = ClassName.get(mvpClassData.getPackageName(), mvpClassData.getBinderClassName());
-                    builder.addStatement("" +
-                                    "MvpBinder.addBinder(\n" +
-                                    "  $T.class,\n" +
-                                    "  new $T())",
-                            activity,
-                            activityBinder
-                    );
-                }
+                mvpClassData -> generateBindingFor(mvpClassData, codeBlockBuilder)
         );
-        return builder
+        return codeBlockBuilder
                 .build();
+    }
+
+    private void generateBindingFor(MvpClassData mvpClassData, CodeBlock.Builder codeBlockBuilder) {
+        ClassName activity = ClassName.bestGuess(mvpClassData.getPackageName() + "." + mvpClassData.getActivityClassName());
+
+        ClassName activityBinder = ClassName.get(mvpClassData.getPackageName(), mvpClassData.getBinderClassName());
+        codeBlockBuilder.addStatement("" +
+                        "MvpBinder.addBinder(\n" +
+                        "  $T.class,\n" +
+                        "  new $T())",
+                activity,
+                activityBinder
+        );
     }
 
     private TypeSpec generateTypeSpec(CodeBlock bindingCode) {
@@ -55,20 +58,5 @@ public class MvpBinderWriter {
                 .addModifiers(Modifier.PUBLIC)
                 .addStaticBlock(bindingCode)
                 .build();
-    }
-
-    private JavaFile generateJavaFile(TypeSpec typeSpec) {
-        return JavaFile.builder(BINDER_PACKAGE_NAME, typeSpec)
-                .addFileComment("Generated code from MvpProcessor. Do not modify!")
-                .build();
-    }
-
-    private void writeFile(JavaFile javaFile) {
-        try {
-            javaFile.writeTo(processingEnvironment.getFiler());
-        } catch (IOException e) {
-            // Note: calling e.printStackTrace() will print IO errors
-            // that occur from the file already existing after its first run, this is normal
-        }
     }
 }

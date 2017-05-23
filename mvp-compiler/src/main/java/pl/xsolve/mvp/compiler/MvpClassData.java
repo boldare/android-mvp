@@ -62,13 +62,17 @@ class MvpClassData {
                 )
                 .forEach(
                         presenterElement -> {
-                            Optional<Element> viewElement = findViewStateFor(presenterElement);
-                            if (viewElement.isPresent()) {
-                                bindings.add(new MvpBinding(presenterElement, viewElement.get()));
-                            }
+                            addBindingForElement(bindings, presenterElement);
                         }
                 );
         return bindings;
+    }
+
+    private void addBindingForElement(List<MvpBinding> bindings, Element presenterElement) {
+        Optional<Element> viewElement = findViewStateFor(presenterElement);
+        if (viewElement.isPresent()) {
+            bindings.add(new MvpBinding(presenterElement, viewElement.get()));
+        }
     }
 
     private Optional<Element> findViewStateFor(Element presenterElement) {
@@ -88,7 +92,7 @@ class MvpClassData {
             this.viewState = viewState;
         }
 
-        public TypeMirror getViewType() {
+        TypeMirror getViewType() {
             DeclaredType presenterType = (DeclaredType) presenter.asType();
             TypeElement presenterTypeElement = (TypeElement) presenterType.asElement();
             DeclaredType supertype = (DeclaredType) presenterTypeElement.getSuperclass();
