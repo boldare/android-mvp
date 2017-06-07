@@ -2,27 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'me.tatarka.retrolambda'
 
 ext {
-    bintrayRepo = 'xsolve-mvp'
-    bintrayName = 'android-mvp'
-
-    publishedGroupId = 'pl.xsolve.mvp'
-    libraryName = 'Android MVP'
     artifact = 'mvp-lib'
-
-    libraryDescription = 'Library used to create View-Presenters surviving configuration changes'
-
-    siteUrl = 'https://github.com/xsolve-pl/android-mvp'
-    gitUrl = 'https://github.com/xsolve-pl/android-mvp.git'
-
-    libraryVersion = '1.0.2-ALFA'
-
-    developerId = 'imbryk'
-    developerName = 'Leszek Mzyk'
-    developerEmail = 'leszek@imbryrk.com'
-
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
 }
 
 android {
@@ -85,5 +65,6 @@ def getRuntimeJar() {
 
 //apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
 //apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
+apply from: '../bintray-data.gradle'
 apply from: '../install.gradle'
 apply from: '../bintray.gradle'
