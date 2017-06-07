@@ -14,7 +14,7 @@ ext {
     siteUrl = 'https://github.com/xsolve-pl/android-mvp'
     gitUrl = 'https://github.com/xsolve-pl/android-mvp.git'
 
-    libraryVersion = '1.0.1-ALFA'
+    libraryVersion = '1.0.2-ALFA'
 
     developerId = 'imbryk'
     developerName = 'Leszek Mzyk'
