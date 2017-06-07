@@ -134,7 +134,9 @@ public class MvpActivityTest {
 
         viewStateVerify.verify(viewState).onStop();
         viewStateVerify.verify(viewState).removeView();
+        viewStateVerify.verify(viewState).onFinish();
         verifyNoMoreInteractions(viewState);
+        presenterVerify.verify(presenter).onFinish();
         verifyNoMoreInteractions(presenter);
     }
 
@@ -151,13 +153,14 @@ public class MvpActivityTest {
         changeConfiguration();
 
         verify(presenter).onStart();
+        verify(presenter, never()).onFinish();
 
         inOrder.verify(viewState).onSaveInstanceState(argumentCaptor.capture());
         inOrder.verify(viewState).onStop();
         inOrder.verify(viewState).removeView();
+        inOrder.verify(viewState, never()).onFinish();
 
         Bundle savedState = argumentCaptor.getValue();
-        inOrder.verify(viewState).onCreate(savedState);
         inOrder.verify(viewState).onStart(systemUnderTest);
         inOrder.verify(viewState).onRestoreInstanceState(savedState);
         verifyNoMoreInteractions(viewState);
@@ -190,7 +193,7 @@ public class MvpActivityTest {
     }
 
     @Test
-    public void shouldRemoveViewWhenDestroyingActivityInBackStack() throws Exception {
+    public void shouldCallMvpLifecycleMethodsWhenDestroyingActivityInBackStack() throws Exception {
         InOrder inOrder = inOrder(viewState);
 
         launchActivity();
@@ -204,12 +207,16 @@ public class MvpActivityTest {
         inOrder.verify(viewState).onStop();
         verifyNoMoreInteractions(viewState);
 
+        reset(presenter);
         reset(viewState);
 
         destroyActivity();
 
         inOrder.verify(viewState).removeView();
+        inOrder.verify(viewState).onFinish();
         verifyNoMoreInteractions(viewState);
+        verify(presenter).onFinish();
+        verifyNoMoreInteractions(presenter);
     }
 
     @Test

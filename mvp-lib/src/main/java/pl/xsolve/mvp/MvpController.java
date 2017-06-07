@@ -24,37 +24,50 @@ public class MvpController {
         return presenterHolder;
     }
 
-    public void onCreate(Bundle savedState) {
-        holdersStream().forEach(presenterHolder -> presenterHolder.viewState.onCreate(savedState));
+    void onCreate(Bundle savedState) {
+        holdersStream().forEach(presenterHolder -> {
+            ViewState viewState = presenterHolder.viewState;
+            if (!viewState.isCreated) {
+                presenterHolder.viewState.onCreate(savedState);
+                viewState.isCreated = true;
+            } 
+        });
     }
 
-    public void onStart(Activity activityContext) {
+    void onStart(Activity activityContext) {
         holdersStream().forEach(presenterHolder -> {
             presenterHolder.presenter.onStart();
             presenterHolder.viewState.onStart(activityContext);
         });
     }
 
-    public void onStop() {
+    void onStop() {
         holdersStream().forEach(presenterHolder -> presenterHolder.viewState.onStop());
     }
 
-    public void onSaveInstanceState(Bundle outState) {
+    void onSaveInstanceState(Bundle outState) {
         holdersStream().forEach(presenterHolder -> presenterHolder.viewState.onSaveInstanceState(outState));
     }
 
-    public void onRestoreInstanceState(Bundle savedState) {
+    void onRestoreInstanceState(Bundle savedState) {
         holdersStream().forEach(presenterHolder -> presenterHolder.viewState.onRestoreInstanceState(savedState));
     }
 
-    public boolean onBackPressed() {
+    boolean onBackPressed() {
         return holdersStream().anyMatch(
                 presenterHolder -> presenterHolder.presenter.onBackPressed()
         );
     }
 
-    public void onDestroy() {
+    void onDestroy() {
         holdersStream().forEach(presenterHolder -> presenterHolder.viewState.removeView());
+    }
+
+    void onFinish() {
+        holdersStream().forEach(presenterHolder -> {
+            presenterHolder.viewState.onFinish();
+            presenterHolder.presenter.onFinish();
+        });
     }
 
     @NonNull
@@ -62,11 +75,11 @@ public class MvpController {
         return Stream.of(holders);
     }
 
-    public boolean isInitialized() {
+    boolean isInitialized() {
         return isInitialized;
     }
 
-    public void setInitialized() {
+    void setInitialized() {
         isInitialized = true;
     }
 
@@ -75,7 +88,7 @@ public class MvpController {
         private final Class<VIEW> typeOfView;
         private ViewState<VIEW> viewState;
 
-        public PresenterHolder(Presenter<VIEW> presenter, Class<VIEW> typeOfView) {
+        PresenterHolder(Presenter<VIEW> presenter, Class<VIEW> typeOfView) {
             this.presenter = presenter;
             this.typeOfView = typeOfView;
         }
@@ -95,8 +108,8 @@ public class MvpController {
         }
     }
 
-    public static class WrongViewException extends RuntimeException {
-        public WrongViewException(String description) {
+    static class WrongViewException extends RuntimeException {
+        WrongViewException(String description) {
             super(description);
         }
     }

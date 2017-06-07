@@ -14,6 +14,9 @@ public abstract class Presenter<VIEW> {
         }
     }
 
+    public void onFinish() {
+    }
+
     private boolean hasView() {
         return view != null;
     }

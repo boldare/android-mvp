@@ -135,6 +135,17 @@ public class MvpControllerTest {
         verify(someViewState).removeView();
     }
 
+    @Test
+    public void shouldCallFinish() throws Exception {
+        TestPresenter somePresenter = mock(TestPresenter.class);
+        TestViewState someViewState = mock(TestViewState.class);
+        systemUnderTest.managePresenter(somePresenter, TestViewInterface.class).withViewState(someViewState);
+
+        systemUnderTest.onFinish();
+        verify(someViewState).onFinish();
+        verify(someViewState).onFinish();
+    }
+
     private interface TestViewInterface {
     }
 
