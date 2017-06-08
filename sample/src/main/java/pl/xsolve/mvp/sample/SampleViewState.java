@@ -1,7 +1,6 @@
 package pl.xsolve.mvp.sample;
 
 import android.os.Bundle;
-import android.os.Debug;
 
 import javax.inject.Inject;
 
@@ -59,6 +58,8 @@ public class SampleViewState extends ViewState<SampleView> implements SampleView
             case STATE_DATA:
                 view.displayData(data);
                 return;
+            default:
+                //no-op
         }
     }
 
@@ -72,8 +73,8 @@ public class SampleViewState extends ViewState<SampleView> implements SampleView
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        state = savedInstanceState.getInt(STATE,state);
-        data = savedInstanceState.getCharSequence(DATA,data);
+        state = savedInstanceState.getInt(STATE, state);
+        data = savedInstanceState.getCharSequence(DATA, data);
         updateView();
     }
 

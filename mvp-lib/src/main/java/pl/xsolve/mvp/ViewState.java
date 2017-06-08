@@ -4,9 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 
 public abstract class ViewState<VIEW> {
-    boolean isCreated = false;
-
     protected VIEW view;
+
     protected Activity activityContext;
 
     public void setView(VIEW view) {

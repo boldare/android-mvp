@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
@@ -61,9 +62,7 @@ class MvpClassData {
                         Comparator.comparing(element -> element.getSimpleName().toString())
                 )
                 .forEach(
-                        presenterElement -> {
-                            addBindingForElement(bindings, presenterElement);
-                        }
+                        presenterElement -> addBindingForElement(bindings, presenterElement)
                 );
         return bindings;
     }
@@ -84,8 +83,8 @@ class MvpClassData {
     }
 
     static class MvpBinding {
-        final Element presenter;
-        final Element viewState;
+        private final Element presenter;
+        private final Element viewState;
 
         MvpBinding(Element presenter, Element viewState) {
             this.presenter = presenter;
@@ -97,6 +96,13 @@ class MvpClassData {
             TypeElement presenterTypeElement = (TypeElement) presenterType.asElement();
             DeclaredType supertype = (DeclaredType) presenterTypeElement.getSuperclass();
             return supertype.getTypeArguments().get(0);
+        }
+
+        Name getPresenterSimpleName() {
+            return presenter.getSimpleName();
+        }
+        Name getViewStateSimpleName() {
+            return viewState.getSimpleName();
         }
     }
 }

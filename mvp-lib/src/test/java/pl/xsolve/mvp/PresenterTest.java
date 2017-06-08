@@ -31,5 +31,6 @@ public class PresenterTest {
 
     private interface TestViewInterface {
     }
-    private static class TestPresenter extends Presenter<TestViewInterface> {}
+    private static class TestPresenter extends Presenter<TestViewInterface> {
+    }
 }

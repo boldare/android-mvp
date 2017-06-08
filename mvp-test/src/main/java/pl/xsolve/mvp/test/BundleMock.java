@@ -26,9 +26,13 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class BundleMock {
+public final class BundleMock {
     private Bundle bundle;
     private Map<String, Object> data = new HashMap<>();
+    private Answer putAllAnswer;
+    private Answer putAnswer;
+    private Answer getAnswer;
+    private Answer<Boolean> containsKeyAnswer;
 
     public static Bundle mockBundle() {
         BundleMock bundleMock = new BundleMock();
@@ -37,26 +41,28 @@ public class BundleMock {
 
     private BundleMock() {
         bundle = mock(Bundle.class);
-        init();
+        createAnswers();
+        mockMethods();
     }
 
-    private void init() {
-        Answer putAllAnswer = invocationOnMock -> {
-            Bundle bundle = (Bundle) invocationOnMock.getArguments()[0];
-            Set<String> keySet = bundle.keySet();
+    private void createAnswers() {
+        putAllAnswer = invocationOnMock -> {
+            Bundle sourceBundle = (Bundle) invocationOnMock.getArguments()[0];
+            Set<String> keySet = sourceBundle.keySet();
             for (String key : keySet) {
-                data.put(key, bundle.get(key));
+                data.put(key, sourceBundle.get(key));
             }
             return null;
         };
 
-        Answer putAnswer = invocationOnMock -> {
+        putAnswer = invocationOnMock -> {
             String key = (String) invocationOnMock.getArguments()[0];
             Object val = invocationOnMock.getArguments()[1];
             data.put(key, val);
             return null;
         };
-        Answer getAnswer = invocationOnMock -> {
+
+        getAnswer = invocationOnMock -> {
             Object[] args = invocationOnMock.getArguments();
             String key = (String) args[0];
             if (data.containsKey(key)) {
@@ -69,10 +75,13 @@ public class BundleMock {
 
         };
 
-        Answer<Boolean> containsKeyAnswer = invocationOnMock -> {
+        containsKeyAnswer = invocationOnMock -> {
             String key = (String) invocationOnMock.getArguments()[0];
             return data.containsKey(key);
         };
+    }
+
+    private void mockMethods() {
 
         when(bundle.containsKey(anyString())).thenAnswer(containsKeyAnswer);
 
@@ -192,7 +201,6 @@ public class BundleMock {
         when(bundle.getStringArrayList(anyString())).thenAnswer(getAnswer);
 
         when(bundle.get(anyString())).thenAnswer(getAnswer);
-
     }
 
 }

@@ -10,12 +10,15 @@ import org.junit.Test;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static pl.xsolve.mvp.test.BundleMock.mockBundle;
 
+@SuppressWarnings({
+        "checkstyle:magicnumber",
+        "checkstyle:methodlength"
+})
 public class BundleMockTest {
     Bundle systemUnderTest;
 
@@ -35,21 +38,23 @@ public class BundleMockTest {
         systemUnderTest.putCharArray("char-arr", new char[]{'x', 'y'});
         systemUnderTest.putCharSequence("char-seq", "charSeq");
         systemUnderTest.putCharSequenceArray("char-seq-arr", new CharSequence[]{"charSeqA", "charSeqB"});
-        systemUnderTest.putCharSequenceArrayList("char-seq-arr-list", new ArrayList<>(Arrays.asList(new CharSequence[]{"charSeqA", "charSeqB"})));
+        systemUnderTest.putCharSequenceArrayList("char-seq-arr-list",
+                new ArrayList<>(Arrays.asList("charSeqA", "charSeqB")));
         systemUnderTest.putDouble("double", 100);
         systemUnderTest.putDoubleArray("double-arr", new double[]{100, 101});
         systemUnderTest.putFloat("float", 10);
         systemUnderTest.putFloatArray("float-arr", new float[]{10, 11});
         systemUnderTest.putInt("int", 20);
         systemUnderTest.putIntArray("int-arr", new int[]{20, 21});
-        systemUnderTest.putIntegerArrayList("int-arr-list", new ArrayList<>(Arrays.asList(new Integer[]{20, 21})));
+        systemUnderTest.putIntegerArrayList("int-arr-list", new ArrayList<>(Arrays.asList(20, 21)));
         systemUnderTest.putLong("long", 30);
         systemUnderTest.putLongArray("long-arr", new long[]{30, 31});
         systemUnderTest.putShort("short", (short) 40);
         systemUnderTest.putShortArray("short-arr", new short[]{40, 41});
         systemUnderTest.putString("string", "someString");
         systemUnderTest.putStringArray("string-arr", new String[]{"someString", "otherString"});
-        systemUnderTest.putStringArrayList("string-arr-list", new ArrayList<>(Arrays.asList(new String[]{"someString", "otherString"})));
+        systemUnderTest.putStringArrayList("string-arr-list",
+                new ArrayList<>(Arrays.asList("someString", "otherString")));
 
         assertThat(systemUnderTest.getBoolean("boolean-true")).isEqualTo(true);
         assertThat(systemUnderTest.getBoolean("boolean-true", false)).isEqualTo(true);
@@ -95,13 +100,16 @@ public class BundleMockTest {
         assertThat(systemUnderTest.getCharSequence("char-seq-empty")).isEqualTo(null);
         assertThat(systemUnderTest.get("char-seq")).isEqualTo("charSeq");
 
-        assertThat(systemUnderTest.getCharSequenceArray("char-seq-arr")).isEqualTo(new CharSequence[]{"charSeqA", "charSeqB"});
+        assertThat(systemUnderTest.getCharSequenceArray("char-seq-arr")).isEqualTo(
+                new CharSequence[]{"charSeqA", "charSeqB"});
         assertThat(systemUnderTest.getCharSequenceArray("char-seq-arr-empty")).isEqualTo(null);
         assertThat(systemUnderTest.get("char-seq-arr")).isEqualTo(new CharSequence[]{"charSeqA", "charSeqB"});
 
-        assertThat(systemUnderTest.getCharSequenceArrayList("char-seq-arr-list")).isEqualTo(new ArrayList<>(Arrays.asList(new CharSequence[]{"charSeqA", "charSeqB"})));
+        assertThat(systemUnderTest.getCharSequenceArrayList("char-seq-arr-list")).isEqualTo(
+                new ArrayList<>(Arrays.asList("charSeqA", "charSeqB")));
         assertThat(systemUnderTest.getCharSequenceArrayList("char-seq-arr-list-empty")).isEqualTo(null);
-        assertThat(systemUnderTest.get("char-seq-arr-list")).isEqualTo(new ArrayList<>(Arrays.asList(new CharSequence[]{"charSeqA", "charSeqB"})));
+        assertThat(systemUnderTest.get("char-seq-arr-list")).isEqualTo(
+                new ArrayList<>(Arrays.asList("charSeqA", "charSeqB")));
 
         assertThat(systemUnderTest.getDouble("double")).isEqualTo(100);
         assertThat(systemUnderTest.getDouble("double-empty", 101)).isEqualTo(101);
@@ -133,15 +141,17 @@ public class BundleMockTest {
         assertThat(systemUnderTest.getIntArray("int-arr-empty")).isEqualTo(null);
         assertThat(systemUnderTest.get("int-arr")).isEqualTo(new int[]{20, 21});
 
-        assertThat(systemUnderTest.getIntegerArrayList("int-arr-list")).isEqualTo(new ArrayList<>(Arrays.asList(new Integer[]{20, 21})));
+        assertThat(systemUnderTest.getIntegerArrayList("int-arr-list")).isEqualTo(
+                new ArrayList<>(Arrays.asList(20, 21)));
         assertThat(systemUnderTest.getIntegerArrayList("int-arr-list-empty")).isEqualTo(null);
-        assertThat(systemUnderTest.get("int-arr-list")).isEqualTo(new ArrayList<>(Arrays.asList(new Integer[]{20, 21})));
+        assertThat(systemUnderTest.get("int-arr-list")).isEqualTo(
+                new ArrayList<>(Arrays.asList(20, 21)));
 
         assertThat(systemUnderTest.getLong("long")).isEqualTo(30);
         assertThat(systemUnderTest.getLong("long", 31)).isEqualTo(30);
         assertThat(systemUnderTest.getLong("long-empty", 31)).isEqualTo(31);
         assertThat(systemUnderTest.getLong("long-empty")).isEqualTo(0);
-        assertThat(systemUnderTest.get("long")).isEqualTo(30l);
+        assertThat(systemUnderTest.get("long")).isEqualTo(30L);
 
         assertThat(systemUnderTest.getLongArray("long-arr")).isEqualTo(new long[]{30, 31});
         assertThat(systemUnderTest.getLongArray("long-arr-empty")).isEqualTo(null);
@@ -163,13 +173,16 @@ public class BundleMockTest {
         assertThat(systemUnderTest.getString("string-empty")).isEqualTo(null);
         assertThat(systemUnderTest.get("string")).isEqualTo("someString");
 
-        assertThat(systemUnderTest.getStringArray("string-arr")).isEqualTo(new String[]{"someString", "otherString"});
+        assertThat(systemUnderTest.getStringArray("string-arr")).isEqualTo(
+                new String[]{"someString", "otherString"});
         assertThat(systemUnderTest.getStringArray("string-arr-empty")).isEqualTo(null);
         assertThat(systemUnderTest.get("string-arr")).isEqualTo(new String[]{"someString", "otherString"});
 
-        assertThat(systemUnderTest.getStringArrayList("string-arr-list")).isEqualTo(new ArrayList<>(Arrays.asList(new String[]{"someString", "otherString"})));
+        assertThat(systemUnderTest.getStringArrayList("string-arr-list")).isEqualTo(
+                new ArrayList<>(Arrays.asList("someString", "otherString")));
         assertThat(systemUnderTest.getStringArrayList("string-arr-list-empty")).isEqualTo(null);
-        assertThat(systemUnderTest.get("string-arr-list")).isEqualTo(new ArrayList<>(Arrays.asList(new String[]{"someString", "otherString"})));
+        assertThat(systemUnderTest.get("string-arr-list")).isEqualTo(
+                new ArrayList<>(Arrays.asList("someString", "otherString")));
     }
 
     @Test
@@ -182,17 +195,17 @@ public class BundleMockTest {
         systemUnderTest.putBundle("bundle", bundle);
         systemUnderTest.putParcelable("parcelable", parcelableA);
         systemUnderTest.putParcelableArray("parcelable-arr", new Parcelable[]{parcelableA, parcelableB});
-        systemUnderTest.putParcelableArrayList("parcelable-arr-list", new ArrayList<>(Arrays.asList(
-                new Parcelable[]{parcelableA, parcelableB})));
+        systemUnderTest.putParcelableArrayList("parcelable-arr-list",
+                new ArrayList<>(Arrays.asList(parcelableA, parcelableB)));
         systemUnderTest.putSerializable("serializable", serializable);
 
-        assertThat((Object)systemUnderTest.getBundle("bundle")).isEqualTo(bundle);
-        assertThat((Object)systemUnderTest.getParcelable("parcelable")).isEqualTo(parcelableA);
-        assertThat((Object)systemUnderTest.getParcelableArray("parcelable-arr")).isEqualTo(new Parcelable[]{parcelableA, parcelableB});
-        assertThat((Object)systemUnderTest.getParcelableArrayList("parcelable-arr-list")).isEqualTo(
-                new ArrayList<>(Arrays.asList(
-                        new Parcelable[]{parcelableA, parcelableB})));
-        assertThat((Object)systemUnderTest.getSerializable("serializable")).isEqualTo(serializable);
+        assertThat((Object) systemUnderTest.getBundle("bundle")).isEqualTo(bundle);
+        assertThat((Object) systemUnderTest.getParcelable("parcelable")).isEqualTo(parcelableA);
+        assertThat((Object) systemUnderTest.getParcelableArray("parcelable-arr")).isEqualTo(
+                new Parcelable[]{parcelableA, parcelableB});
+        assertThat((Object) systemUnderTest.getParcelableArrayList("parcelable-arr-list")).isEqualTo(
+                new ArrayList<>(Arrays.asList(parcelableA, parcelableB)));
+        assertThat((Object) systemUnderTest.getSerializable("serializable")).isEqualTo(serializable);
     }
 
     @Test

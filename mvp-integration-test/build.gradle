@@ -9,6 +9,10 @@ android {
         minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
     }
+    lintOptions {
+        abortOnError false
+        lintConfig rootProject.file('lint.xml')
+    }
 }
 
 android.applicationVariants.all {

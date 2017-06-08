@@ -57,9 +57,9 @@ class MvpClassWriter extends AbstractWriter<MvpClassData> {
         codeBlockBuilder.addStatement("getController(activity)\n" +
                         "  .managePresenter(activity.$L, $T.class)\n" +
                         "  .withViewState(activity.$L)",
-                mvpBinding.presenter.getSimpleName(),
+                mvpBinding.getPresenterSimpleName(),
                 mvpBinding.getViewType(),
-                mvpBinding.viewState.getSimpleName());
+                mvpBinding.getViewStateSimpleName());
     }
 
     private ClassName generateSuperClass() {

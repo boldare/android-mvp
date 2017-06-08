@@ -1,5 +1,6 @@
 package pl.xsolve.mvp.sample;
 
+import android.annotation.SuppressLint;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -24,12 +25,14 @@ public class SampleViewImpl implements SampleView {
         ButterKnife.bind(this, root);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void displayData(CharSequence someData) {
         text.setText("data received:\n" + someData);
         fab.setVisibility(View.GONE);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void displayProgress() {
         text.setText("loading data - feel free to rotate the device");

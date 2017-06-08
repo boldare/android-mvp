@@ -1,67 +1,67 @@
 buildscript {
     ext.versions = [
-            minSdk: 9,
-            targetSdk: 25,
-            compileSdk: 25,
-            buildTools: '25.0.3',
+            minSdk        : 15,
+            targetSdk     : 25,
+            compileSdk    : 25,
+            buildTools    : '25.0.3',
 
-            mvp: '1.0-ALPHA-1',
+            mvp           : '1.0-ALPHA-1',
 
-            androidPlugin: '2.3.2',
+            androidPlugin : '2.3.2',
             supportLibrary: '25.3.1',
-            dagger: '2.10',
-            robolectric: '3.3.2',
+            dagger        : '2.10',
+            robolectric   : '3.3.2',
     ]
 
     ext.deps = [
-            android: [
+            android        : [
                     gradlePlugin: "com.android.tools.build:gradle:${versions.androidPlugin}",
             ],
-            support: [
+            support        : [
                     appcompat: "com.android.support:appcompat-v7:${versions.supportLibrary}",
             ],
-            dagger: [
-                    library: "com.google.dagger:dagger:${versions.dagger}",
+            dagger         : [
+                    library : "com.google.dagger:dagger:${versions.dagger}",
                     compiler: "com.google.dagger:dagger-compiler:${versions.dagger}",
             ],
-            robolectric: [
+            robolectric    : [
                     library: "org.robolectric:robolectric:${versions.robolectric}",
                     shadows: "org.robolectric:shadows-core:${versions.robolectric}",
             ],
-            stream: "com.annimon:stream:1.1.7",
-            javapoet: "com.squareup:javapoet:1.9.0",
-            junit: "junit:junit:4.12",
-            assertj: "org.assertj:assertj-core:3.7.0",
-            mockito: "org.mockito:mockito-core:1.10.19",
-            truth: "com.google.truth:truth:0.28",
-            compiletesting: "com.google.testing.compile:compile-testing:0.9",
+            stream         : "com.annimon:stream:1.1.7",
+            javapoet       : "com.squareup:javapoet:1.9.0",
+            junit          : "junit:junit:4.12",
+            assertj        : "org.assertj:assertj-core:3.7.0",
+            mockito        : "org.mockito:mockito-core:1.10.19",
+            truth          : "com.google.truth:truth:0.28",
+            compiletesting : "com.google.testing.compile:compile-testing:0.9",
             javaxAnnotation: "javax.annotation:jsr250-api:1.0",
-            googleauto: "com.google.auto.service:auto-service:1.0-rc3",
-            retrolambda: "me.tatarka:gradle-retrolambda:3.6.1",
-            maven: "com.github.dcendents:android-maven-gradle-plugin:1.5",
-            bintray: "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3",
+            googleauto     : "com.google.auto.service:auto-service:1.0-rc3",
+            retrolambda    : "me.tatarka:gradle-retrolambda:3.6.1",
+            maven          : "com.github.dcendents:android-maven-gradle-plugin:1.5",
+            bintray        : "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3",
     ]
 
     ext.publishData = [
-        bintrayRepo: 'xsolve-mvp',
-        bintrayName: 'android-mvp',
+            bintrayRepo       : 'xsolve-mvp',
+            bintrayName       : 'android-mvp',
 
-        publishedGroupId: 'pl.xsolve.mvp',
-        libraryName: 'Android MVP',
+            publishedGroupId  : 'pl.xsolve.mvp',
+            libraryName       : 'Android MVP',
 
-        libraryDescription: 'Library used to create View-Presenters surviving configuration changes',
-        libraryVersion: "${versions.mvp}",
+            libraryDescription: 'Library used to create View-Presenters surviving configuration changes',
+            libraryVersion    : "${versions.mvp}",
 
-        siteUrl: 'https://github.com/xsolve-pl/android-mvp',
-        gitUrl: 'https://github.com/xsolve-pl/android-mvp.git',
+            siteUrl           : 'https://github.com/xsolve-pl/android-mvp',
+            gitUrl            : 'https://github.com/xsolve-pl/android-mvp.git',
 
-        developerId: 'imbryk',
-        developerName: 'Leszek Mzyk',
-        developerEmail: 'leszek@imbryk.com',
+            developerId       : 'imbryk',
+            developerName     : 'Leszek Mzyk',
+            developerEmail    : 'leszek@imbryk.com',
 
-        licenseName: 'The Apache Software License, Version 2.0',
-        licenseUrl: 'http://www.apache.org/licenses/LICENSE-2.0.txt',
-        allLicenses: ["Apache-2.0"],
+            licenseName       : 'The Apache Software License, Version 2.0',
+            licenseUrl        : 'http://www.apache.org/licenses/LICENSE-2.0.txt',
+            allLicenses       : ["Apache-2.0"],
     ]
 
     repositories {
@@ -76,6 +76,28 @@ buildscript {
     }
 }
 
+subprojects { project ->
+    apply plugin: 'checkstyle'
+
+    checkstyle {
+        toolVersion = '7.8.1'
+    }
+    task checkstyle(type: Checkstyle) {
+        configFile rootProject.file('checkstyle.xml')
+        source 'src'
+        ignoreFailures false
+        showViolations true
+        include '**/*.java'
+        exclude '**/gen/**'
+
+        classpath = files()
+    }
+    afterEvaluate {
+        if (project.tasks.findByName('check')) {
+            check.dependsOn('checkstyle')
+        }
+    }
+}
 allprojects {
     repositories {
         jcenter()

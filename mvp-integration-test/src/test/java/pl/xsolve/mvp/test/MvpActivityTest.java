@@ -1,5 +1,6 @@
 package pl.xsolve.mvp.test;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import org.junit.Before;
@@ -13,7 +14,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.ShadowActivity;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
-import org.robolectric.internal.ShadowExtractor;
 import org.robolectric.shadow.api.Shadow;
 
 import javax.inject.Inject;
@@ -55,6 +55,7 @@ public class MvpActivityTest {
 
     @Inject
     TestViewState viewState;
+
     @Inject
     TestPresenter presenter;
 
@@ -284,6 +285,7 @@ public class MvpActivityTest {
     public static class TestViewState extends ViewState<TestViewInterface> implements TestViewInterface {
     }
 
+    @SuppressLint("Registered")
     public static class TestMvpActivity extends MvpActivity {
         @Inject
         @MvpPresenter(viewState = "viewState")
@@ -301,15 +303,10 @@ public class MvpActivityTest {
         protected void inject(MvpActivityComponent component) {
             ((MockComponent) component).inject(this);
         }
-
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-        }
     }
     //endregion
 
-    //region Dependecy Injection
+    //region Dependency Injection
     @Module
     public static class MockModule extends MvpActivityModule {
         private final TestViewState viewState;
@@ -355,7 +352,7 @@ public class MvpActivityTest {
 
     private void changeConfiguration() {
         Bundle outState = new Bundle();
-        ShadowActivity shadowActivity = (ShadowActivity) ShadowExtractor.extract(systemUnderTest);
+        ShadowActivity shadowActivity = Shadow.extract(systemUnderTest);
         shadowActivity.changeConfigurations();
         activityController
                 .pause()
@@ -380,7 +377,7 @@ public class MvpActivityTest {
     }
 
     private void finishActivity() {
-        ShadowActivity shadowActivity = (ShadowActivity) ShadowExtractor.extract(systemUnderTest);
+        ShadowActivity shadowActivity = Shadow.extract(systemUnderTest);
         shadowActivity.resetIsChangingConfigurations();
         shadowActivity.finish();
         activityController
@@ -391,7 +388,7 @@ public class MvpActivityTest {
 
     private Bundle moveActivityToBackStack() {
         Bundle outState = new Bundle();
-        ShadowActivity shadowActivity = (ShadowActivity) ShadowExtractor.extract(systemUnderTest);
+        ShadowActivity shadowActivity = Shadow.extract(systemUnderTest);
         shadowActivity.resetIsChangingConfigurations();
         shadowActivity.resetIsFinishing();
         activityController
@@ -404,7 +401,7 @@ public class MvpActivityTest {
 
     private void moveToAndFromBackStack() {
         Bundle outState = new Bundle();
-        ShadowActivity shadowActivity = (ShadowActivity) ShadowExtractor.extract(systemUnderTest);
+        ShadowActivity shadowActivity = Shadow.extract(systemUnderTest);
         shadowActivity.resetIsChangingConfigurations();
         activityController
                 .pause()
@@ -415,7 +412,7 @@ public class MvpActivityTest {
     }
 
     private void destroyActivity() {
-        ShadowActivity shadowActivity = (ShadowActivity) ShadowExtractor.extract(systemUnderTest);
+        ShadowActivity shadowActivity = Shadow.extract(systemUnderTest);
         shadowActivity.resetIsChangingConfigurations();
         activityController
                 .destroy();

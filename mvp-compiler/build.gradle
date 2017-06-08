@@ -13,4 +13,9 @@ dependencies {
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
+checkstyle {
+    configFile rootProject.file('checkstyle.xml')
+    showViolations true
+}
+
 apply from: '../install.gradle'
