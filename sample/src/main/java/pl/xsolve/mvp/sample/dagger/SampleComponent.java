@@ -1,21 +1,21 @@
 package pl.xsolve.mvp.sample.dagger;
 
 import dagger.Component;
-import pl.xsolve.mvp.dagger.BaseActivityComponent;
-import pl.xsolve.mvp.dagger.BaseActivityModule;
-import pl.xsolve.mvp.dagger.BaseComponent;
+import pl.xsolve.mvp.dagger.MvpActivityComponent;
+import pl.xsolve.mvp.dagger.MvpActivityModule;
+import pl.xsolve.mvp.dagger.MvpComponent;
 import pl.xsolve.mvp.dagger.scope.ScreenScope;
 import pl.xsolve.mvp.sample.SampleActivity;
 
 @ScreenScope
 @Component(
         dependencies = {
-                BaseComponent.class
+                MvpComponent.class
         },
         modules = {
-                BaseActivityModule.class
+                MvpActivityModule.class
         }
 )
-public interface SampleComponent extends BaseActivityComponent {
+public interface SampleComponent extends MvpActivityComponent {
     void inject(SampleActivity activity);
 }

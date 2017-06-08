@@ -17,7 +17,7 @@ public class MvpBinder {
     }
     private static Map<String, ActivityBinder> binders;
 
-    public static void bindMvp(BaseActivity activity) {
+    public static void bindMvp(MvpActivity activity) {
         ActivityBinder binder = findBinderFor(getKeyFor(activity));
         binder.bind(activity);
     }
@@ -50,14 +50,14 @@ public class MvpBinder {
     }
 
     public static abstract class ActivityBinder {
-        public abstract void bind(BaseActivity activity);
-        protected MvpController getController(BaseActivity activity) {
+        public abstract void bind(MvpActivity activity);
+        protected MvpController getController(MvpActivity activity) {
             return activity.mvpController;
         }
 
         private static ActivityBinder EMPTY = new ActivityBinder() {
             @Override
-            public void bind(BaseActivity activity) {
+            public void bind(MvpActivity activity) {
             }
         };
     }

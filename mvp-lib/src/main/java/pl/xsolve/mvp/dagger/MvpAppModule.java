@@ -9,10 +9,10 @@ import dagger.Provides;
 
 
 @Module
-public class AppModule {
+public class MvpAppModule {
     private final Context context;
 
-    public AppModule(Context context) {
+    public MvpAppModule(Context context) {
         this.context = context;
     }
 

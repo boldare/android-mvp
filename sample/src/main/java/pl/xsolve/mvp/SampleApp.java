@@ -2,13 +2,13 @@ package pl.xsolve.mvp;
 
 import android.app.Application;
 
-import pl.xsolve.mvp.dagger.BaseComponentFactory;
+import pl.xsolve.mvp.dagger.MvpComponentFactory;
 
 
 public class SampleApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        new BaseComponentFactory().create(this);
+        new MvpComponentFactory().create(this);
     }
 }

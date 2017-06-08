@@ -1,4 +1,33 @@
 apply plugin: 'java'
 
+ext {
+    bintrayRepo = 'xsolve-mvp'
+    bintrayName = 'android-mvp'
+
+    publishedGroupId = 'pl.xsolve.mvp'
+    libraryName = 'Android MVP annotations'
+    artifact = 'mvp-api'
+
+    libraryDescription = 'Library used to create View-Presenters surviving configuration changes'
+
+    siteUrl = 'https://github.com/xsolve-pl/android-mvp'
+    gitUrl = 'https://github.com/xsolve-pl/android-mvp.git'
+
+    libraryVersion = '1.0.1-ALFA'
+
+    developerId = 'imbryk'
+    developerName = 'Leszek Mzyk'
+    developerEmail = 'leszek@imbryrk.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
+
+//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
+apply from: '../install.gradle'
+apply from: '../bintray.gradle'

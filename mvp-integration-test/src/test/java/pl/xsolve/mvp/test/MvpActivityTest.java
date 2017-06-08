@@ -21,15 +21,15 @@ import javax.inject.Inject;
 import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
-import pl.xsolve.mvp.BaseActivity;
+import pl.xsolve.mvp.MvpActivity;
 import pl.xsolve.mvp.Presenter;
 import pl.xsolve.mvp.ViewState;
 import pl.xsolve.mvp.api.MvpPresenter;
 import pl.xsolve.mvp.api.MvpViewState;
-import pl.xsolve.mvp.dagger.BaseActivityComponent;
-import pl.xsolve.mvp.dagger.BaseActivityModule;
-import pl.xsolve.mvp.dagger.BaseComponent;
-import pl.xsolve.mvp.dagger.BaseComponentFactory;
+import pl.xsolve.mvp.dagger.MvpActivityComponent;
+import pl.xsolve.mvp.dagger.MvpActivityModule;
+import pl.xsolve.mvp.dagger.MvpComponent;
+import pl.xsolve.mvp.dagger.MvpComponentFactory;
 import pl.xsolve.mvp.dagger.scope.ScreenScope;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,9 +49,9 @@ import static org.mockito.Mockito.when;
         shadows = {ShadowActivity.class}
 
 )
-public class BaseActivityTest {
-    private TestBaseActivity systemUnderTest;
-    private ActivityController<TestBaseActivity> activityController;
+public class MvpActivityTest {
+    private TestMvpActivity systemUnderTest;
+    private ActivityController<TestMvpActivity> activityController;
 
     @Inject
     TestViewState viewState;
@@ -64,15 +64,15 @@ public class BaseActivityTest {
     public void setUp() throws Exception {
         createComponent();
         sComponent.inject(this);
-        activityController = Robolectric.buildActivity(TestBaseActivity.class);
+        activityController = Robolectric.buildActivity(TestMvpActivity.class);
         systemUnderTest = activityController.get();
     }
 
     private void createComponent() {
-        new BaseComponentFactory().create(RuntimeEnvironment.application);
-        sComponent = DaggerBaseActivityTest_MockComponent
+        new MvpComponentFactory().create(RuntimeEnvironment.application);
+        sComponent = DaggerMvpActivityTest_MockComponent
                 .builder()
-                .baseComponent(new BaseComponentFactory().get())
+                .mvpComponent(new MvpComponentFactory().get())
                 .mockModule(new MockModule(mock(TestPresenter.class), mock(TestViewState.class)))
                 .build();
     }
@@ -92,13 +92,13 @@ public class BaseActivityTest {
         launchActivity();
 
 
-        BaseActivity oldActivity = systemUnderTest;
+        MvpActivity oldActivity = systemUnderTest;
         TestPresenter oldPresenter = systemUnderTest.presenter;
         TestViewState oldView = systemUnderTest.viewState;
 
         changeConfiguration();
 
-        TestBaseActivity newActivity = systemUnderTest;
+        TestMvpActivity newActivity = systemUnderTest;
         TestPresenter newPresenter = systemUnderTest.presenter;
         TestViewState newView = systemUnderTest.viewState;
 
@@ -216,7 +216,7 @@ public class BaseActivityTest {
     public void shouldRestartKilledMvpWithSavedState() throws Exception {
         launchActivity();
 
-        TestBaseActivity oldActivity = systemUnderTest;
+        TestMvpActivity oldActivity = systemUnderTest;
         TestPresenter oldPresenter = systemUnderTest.presenter;
         ViewState oldView = systemUnderTest.viewState;
 
@@ -277,7 +277,7 @@ public class BaseActivityTest {
     public static class TestViewState extends ViewState<TestViewInterface> implements TestViewInterface {
     }
 
-    public static class TestBaseActivity extends BaseActivity {
+    public static class TestMvpActivity extends MvpActivity {
         @Inject
         @MvpPresenter(viewState = "viewState")
         TestPresenter presenter;
@@ -286,12 +286,12 @@ public class BaseActivityTest {
         TestViewState viewState;
 
         @Override
-        protected BaseActivityComponent createComponent() {
+        protected MvpActivityComponent createComponent() {
             return sComponent;
         }
 
         @Override
-        protected void inject(BaseActivityComponent component) {
+        protected void inject(MvpActivityComponent component) {
             ((MockComponent) component).inject(this);
         }
 
@@ -304,7 +304,7 @@ public class BaseActivityTest {
 
     //region Dependecy Injection
     @Module
-    public static class MockModule extends BaseActivityModule {
+    public static class MockModule extends MvpActivityModule {
         private final TestViewState viewState;
         private final TestPresenter presenter;
 
@@ -328,13 +328,13 @@ public class BaseActivityTest {
 
     @ScreenScope
     @Component(
-            dependencies = BaseComponent.class,
+            dependencies = MvpComponent.class,
             modules = MockModule.class
     )
-    public interface MockComponent extends BaseActivityComponent {
-        void inject(TestBaseActivity activity);
+    public interface MockComponent extends MvpActivityComponent {
+        void inject(TestMvpActivity activity);
 
-        void inject(BaseActivityTest activity);
+        void inject(MvpActivityTest activity);
     }
     //endregion
 
@@ -357,7 +357,7 @@ public class BaseActivityTest {
         Object nci = systemUnderTest.onRetainNonConfigurationInstance();
         activityController.destroy();
 
-        activityController = Robolectric.buildActivity(TestBaseActivity.class);
+        activityController = Robolectric.buildActivity(TestMvpActivity.class);
         systemUnderTest = activityController.get();
         shadowActivity = Shadow.extract(systemUnderTest);
         shadowActivity.setLastNonConfigurationInstance(nci);

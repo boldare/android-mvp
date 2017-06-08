@@ -35,7 +35,7 @@ class MvpClassWriter extends AbstractWriter<MvpClassData> {
                 .addAnnotation(Override.class)
                 .returns(TypeName.VOID)
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(ClassName.get("pl.xsolve.mvp", "BaseActivity"), "baseActivity")
+                .addParameter(ClassName.get("pl.xsolve.mvp", "MvpActivity"), "mvpActivity")
                 .addCode(generateBindingsCodeBlock(mvpClassData))
                 .build();
     }
@@ -44,7 +44,7 @@ class MvpClassWriter extends AbstractWriter<MvpClassData> {
         ClassName activity = ClassName.get(mvpClassData.getPackageName(), mvpClassData.getActivityClassName());
 
         CodeBlock.Builder codeBlockBuilder = CodeBlock.builder()
-                .addStatement("$T activity = ($T) baseActivity", activity, activity);
+                .addStatement("$T activity = ($T) mvpActivity", activity, activity);
 
         mvpClassData.getBindings()
                 .stream()

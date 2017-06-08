@@ -42,12 +42,12 @@ public class MvpProcessorTest {
     private void simulateSourceFilesExist() {
         dummySource = forSourceString("test.dummy.DummyActivity", "" +
                 "package test.dummy;\n" +
-                "import pl.xsolve.mvp.BaseActivity;\n" +
+                "import pl.xsolve.mvp.MvpActivity;\n" +
                 "import pl.xsolve.mvp.Presenter;\n" +
                 "import pl.xsolve.mvp.ViewState;\n" +
                 "import pl.xsolve.mvp.api.MvpPresenter;\n" +
                 "import pl.xsolve.mvp.api.MvpViewState;\n" +
-                "public abstract class DummyActivity extends BaseActivity{\n" +
+                "public abstract class DummyActivity extends MvpActivity{\n" +
                 "\n" +
                 "    @MvpViewState\n" +
                 "    DummyViewState dummyViewState;\n" +
@@ -71,13 +71,13 @@ public class MvpProcessorTest {
 
         boringSource = forSourceString("test.boring.EnclosingClass", "" +
                 "package test.boring;\n" +
-                "import pl.xsolve.mvp.BaseActivity;\n" +
+                "import pl.xsolve.mvp.MvpActivity;\n" +
                 "import pl.xsolve.mvp.Presenter;\n" +
                 "import pl.xsolve.mvp.ViewState;\n" +
                 "import pl.xsolve.mvp.api.MvpPresenter;\n" +
                 "import pl.xsolve.mvp.api.MvpViewState;\n" +
                 "public class EnclosingClass{\n" +
-                "    public static abstract class BoringActivity extends BaseActivity{\n" +
+                "    public static abstract class BoringActivity extends MvpActivity{\n" +
                 "\n" +
                 "        @MvpViewState\n" +
                 "        BoringViewState boringViewState;\n" +
@@ -96,12 +96,12 @@ public class MvpProcessorTest {
         dummyGeneratedSource = forSourceString("test.dummy.DummyActivity$MvpActivityBinder", "" +
                 "package test.dummy;\n" +
                 "import java.lang.Override;\n" +
-                "import pl.xsolve.mvp.BaseActivity;\n" +
+                "import pl.xsolve.mvp.MvpActivity;\n" +
                 "import pl.xsolve.mvp.MvpBinder;\n" +
                 "public class DummyActivity$MvpActivityBinder extends MvpBinder.ActivityBinder{\n" +
                 "    @Override\n" +
-                "    public void bind(BaseActivity baseActivity) {\n" +
-                "        DummyActivity activity = (DummyActivity) baseActivity;\n" +
+                "    public void bind(MvpActivity mvpActivity) {\n" +
+                "        DummyActivity activity = (DummyActivity) mvpActivity;\n" +
                 "        getController(activity)\n" +
                 "                .managePresenter(activity.dummyPresenter, DummyActivity.DummyView.class)\n" +
                 "                .withViewState(activity.dummyViewState);\n" +
@@ -115,12 +115,12 @@ public class MvpProcessorTest {
         boringGeneratedResult = forSourceString("test.boring.EnclosingClass$BoringActivity$MvpActivityBinder", "" +
                 "package test.boring;\n" +
                 "import java.lang.Override;\n" +
-                "import pl.xsolve.mvp.BaseActivity;\n" +
+                "import pl.xsolve.mvp.MvpActivity;\n" +
                 "import pl.xsolve.mvp.MvpBinder;\n" +
                 "public class EnclosingClass$BoringActivity$MvpActivityBinder extends MvpBinder.ActivityBinder{\n" +
                 "    @Override\n" +
-                "    public void bind(BaseActivity baseActivity) {\n" +
-                "        EnclosingClass.BoringActivity activity = (EnclosingClass.BoringActivity) baseActivity;\n" +
+                "    public void bind(MvpActivity mvpActivity) {\n" +
+                "        EnclosingClass.BoringActivity activity = (EnclosingClass.BoringActivity) mvpActivity;\n" +
                 "        getController(activity)\n" +
                 "                .managePresenter(activity.boringPresenter, EnclosingClass.BoringView.class)\n" +
                 "                .withViewState(activity.boringViewState);\n" +
