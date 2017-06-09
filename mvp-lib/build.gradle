@@ -2,88 +2,66 @@ apply plugin: 'com.android.library'
 apply plugin: 'me.tatarka.retrolambda'
 
 ext {
-    bintrayRepo = 'xsolve-mvp'
-    bintrayName = 'android-mvp'
-
-    publishedGroupId = 'pl.xsolve.mvp'
-    libraryName = 'Android MVP'
     artifact = 'mvp-lib'
-
-    libraryDescription = 'Library used to create View-Presenters surviving configuration changes'
-
-    siteUrl = 'https://github.com/xsolve-pl/android-mvp'
-    gitUrl = 'https://github.com/xsolve-pl/android-mvp.git'
-
-    libraryVersion = '1.0.1-ALFA'
-
-    developerId = 'imbryk'
-    developerName = 'Leszek Mzyk'
-    developerEmail = 'leszek@imbryrk.com'
-
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion versions.buildTools
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    lintOptions {
+        abortOnError false
+        lintConfig rootProject.file('lint.xml')
+    }
 }
 
-//temporary solution for android processor bug:
-//https://issuetracker.google.com/issues/37121918
 android.libraryVariants.all {
     def aptOutputDir = new File(buildDir, "generated/source/apt/${it.unitTestVariant.dirName}")
     it.unitTestVariant.addJavaSourceFoldersToModel(aptOutputDir)
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.annimon:stream:1.1.7'
-    compile "com.google.dagger:dagger:2.10"
     compile project(':mvp-api')
+    compile deps.support.appcompat
+    compile deps.stream
+    compile deps.dagger.library
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.assertj:assertj-core:3.7.0'
-    testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile project(':mvp-compiler')
-    testCompile 'com.google.testing.compile:compile-testing:0.9'
-    testCompile 'com.google.truth:truth:0.28'
+    testCompile deps.junit
+    testCompile deps.assertj
+    testCompile deps.mockito
+    testCompile deps.compiletesting
+    testCompile deps.truth
 
     testCompile files(getRuntimeJar())
     testCompile files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
 
-    annotationProcessor "com.google.dagger:dagger-compiler:2.10"
     annotationProcessor project(':mvp-compiler')
-    provided 'javax.annotation:jsr250-api:1.0'
+    annotationProcessor deps.dagger.compiler
+
+    provided deps.javaxAnnotation
 }
 
 def getRuntimeJar() {
     try {
-        final File javaBase = new File(System.getProperty("java.home")).getCanonicalFile();
-        File runtimeJar = new File(javaBase, "lib/rt.jar");
+        final File javaBase = new File(System.getProperty("java.home")).getCanonicalFile()
+        File runtimeJar = new File(javaBase, "lib/rt.jar")
         if (runtimeJar.exists()) {
-            return runtimeJar;
+            return runtimeJar
         }
-        runtimeJar = new File(javaBase, "jre/lib/rt.jar");
-        return runtimeJar.exists() ? runtimeJar : null;
+        runtimeJar = new File(javaBase, "jre/lib/rt.jar")
+        return runtimeJar.exists() ? runtimeJar : null
     } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new RuntimeException(e)
     }
 }
 
-//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
-//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
 apply from: '../install.gradle'
-apply from: '../bintray.gradle'

@@ -49,13 +49,13 @@ public class MvpBinder {
         }
     }
 
-    public static abstract class ActivityBinder {
+    public abstract static class ActivityBinder {
         public abstract void bind(MvpActivity activity);
         protected MvpController getController(MvpActivity activity) {
             return activity.mvpController;
         }
 
-        private static ActivityBinder EMPTY = new ActivityBinder() {
+        private static final ActivityBinder EMPTY = new ActivityBinder() {
             @Override
             public void bind(MvpActivity activity) {
             }

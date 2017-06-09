@@ -75,6 +75,10 @@ public abstract class MvpActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         mvpController.onDestroy();
+        if (!isChangingConfigurations()) {
+            mvpController.onFinish();
+        }
+
     }
 
     @Override

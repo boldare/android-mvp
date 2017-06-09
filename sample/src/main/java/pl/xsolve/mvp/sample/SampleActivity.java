@@ -44,11 +44,6 @@ public class SampleActivity extends MvpActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
     protected MvpActivityComponent createComponent() {
         return DaggerSampleComponent.builder()
                 .mvpComponent(new MvpComponentFactory().get())
@@ -57,6 +52,6 @@ public class SampleActivity extends MvpActivity {
 
     @Override
     protected void inject(MvpActivityComponent component) {
-        ((SampleComponent)component).inject(this);
+        ((SampleComponent) component).inject(this);
     }
 }

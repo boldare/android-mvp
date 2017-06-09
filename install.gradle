@@ -1,6 +1,6 @@
 apply plugin: 'com.github.dcendents.android-maven'
 
-group = publishedGroupId                               // Maven Group ID for the artifact
+group = publishData.publishedGroupId // Maven Group ID for the artifact
 
 install {
     repositories.mavenInstaller {
@@ -8,34 +8,93 @@ install {
         pom {
             project {
                 packaging 'aar'
-                groupId publishedGroupId
+                groupId publishData.publishedGroupId
                 artifactId artifact
 
                 // Add your description here
-                name libraryName
-                description libraryDescription
-                url siteUrl
+                name publishData.libraryName
+                description publishData.libraryDescription
+                url publishData.siteUrl
 
                 // Set your license
                 licenses {
                     license {
-                        name licenseName
-                        url licenseUrl
+                        name publishData.licenseName
+                        url publishData.licenseUrl
                     }
                 }
                 developers {
                     developer {
-                        id developerId
-                        name developerName
-                        email developerEmail
+                        id publishData.developerId
+                        name publishData.developerName
+                        email publishData.developerEmail
                     }
                 }
                 scm {
-                    connection gitUrl
-                    developerConnection gitUrl
-                    url siteUrl
+                    connection publishData.gitUrl
+                    developerConnection publishData.gitUrl
+                    url publishData.siteUrl
 
                 }
+            }
+        }
+    }
+}
+apply plugin: 'com.jfrog.bintray'
+
+version = publishData.libraryVersion
+
+if (project.hasProperty("android")) { // Android libraries
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from android.sourceSets.main.java.srcDirs
+    }
+
+    task javadoc(type: Javadoc) {
+        source = android.sourceSets.main.java.srcDirs
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    }
+} else { // Java libraries
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+// Bintray
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+
+    configurations = ['archives']
+    pkg {
+        repo = publishData.bintrayRepo
+        name = publishData.bintrayName
+        desc = publishData.libraryDescription
+        websiteUrl = publishData.siteUrl
+        vcsUrl = publishData.gitUrl
+        licenses = publishData.allLicenses
+        publish = true
+        publicDownloadNumbers = true
+        version {
+            desc = publishData.libraryDescription
+            gpg {
+                sign = true //Determines whether to GPG sign the files. The default is false
+                passphrase = properties.getProperty("bintray.gpg.password")
+//                //Optional. The passphrase for GPG signing'
             }
         }
     }

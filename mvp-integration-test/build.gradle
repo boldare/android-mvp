@@ -2,35 +2,40 @@ apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion versions.buildTools
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+    }
+    lintOptions {
+        abortOnError false
+        lintConfig rootProject.file('lint.xml')
     }
 }
+
 android.applicationVariants.all {
     def aptOutputDir = new File(buildDir, "generated/source/apt/${it.unitTestVariant.dirName}")
     it.unitTestVariant.addJavaSourceFoldersToModel(aptOutputDir)
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile "com.google.dagger:dagger:2.10"
     compile project(':mvp-lib')
+    compile deps.support.appcompat
+    compile deps.dagger.library
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.assertj:assertj-core:3.7.0'
-    testCompile 'org.mockito:mockito-core:1.10.19'
+    testCompile deps.junit
+    testCompile deps.assertj
+    testCompile deps.mockito
     testCompile 'org.robolectric:shadows-core:3.3.2'
     testCompile 'org.robolectric:robolectric:3.3.2'
 
-    annotationProcessor "com.google.dagger:dagger-compiler:2.10"
-    testAnnotationProcessor "com.google.dagger:dagger-compiler:2.10"
     annotationProcessor project(':mvp-compiler')
+    annotationProcessor deps.dagger.compiler
+
     testAnnotationProcessor project(':mvp-compiler')
-    provided 'javax.annotation:jsr250-api:1.0'
+    testAnnotationProcessor deps.dagger.compiler
+
+    provided deps.javaxAnnotation
 }

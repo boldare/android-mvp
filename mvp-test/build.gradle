@@ -1,0 +1,36 @@
+apply plugin: 'com.android.library'
+apply plugin: 'me.tatarka.retrolambda'
+
+ext {
+    artifact = 'mvp-test'
+}
+
+android {
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion versions.buildTools
+
+    defaultConfig {
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    lintOptions {
+        abortOnError false
+        lintConfig rootProject.file('lint.xml')
+    }
+}
+
+dependencies {
+    compile project(':mvp-lib')
+    compile deps.support.appcompat
+    compile deps.mockito
+
+    testCompile deps.junit
+    testCompile deps.assertj
+    testCompile deps.mockito
+}
+
+apply from: '../install.gradle'

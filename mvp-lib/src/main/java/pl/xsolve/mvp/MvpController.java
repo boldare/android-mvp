@@ -14,6 +14,7 @@ public class MvpController {
     private final Set<PresenterHolder> holders;
     private boolean isInitialized = false;
 
+
     public MvpController() {
         holders = new HashSet<>();
     }
@@ -24,37 +25,38 @@ public class MvpController {
         return presenterHolder;
     }
 
-    public void onCreate(Bundle savedState) {
-        holdersStream().forEach(presenterHolder -> presenterHolder.viewState.onCreate(savedState));
+    void onCreate(Bundle savedState) {
+        holdersStream().forEach(presenterHolder -> presenterHolder.onCreate(savedState));
     }
 
-    public void onStart(Activity activityContext) {
-        holdersStream().forEach(presenterHolder -> {
-            presenterHolder.presenter.onStart();
-            presenterHolder.viewState.onStart(activityContext);
-        });
+    void onStart(Activity activityContext) {
+        holdersStream().forEach(presenterHolder -> presenterHolder.onStart(activityContext));
     }
 
-    public void onStop() {
-        holdersStream().forEach(presenterHolder -> presenterHolder.viewState.onStop());
+    void onStop() {
+        holdersStream().forEach(PresenterHolder::onStop);
     }
 
-    public void onSaveInstanceState(Bundle outState) {
-        holdersStream().forEach(presenterHolder -> presenterHolder.viewState.onSaveInstanceState(outState));
+    void onSaveInstanceState(Bundle outState) {
+        holdersStream().forEach(presenterHolder -> presenterHolder.onSaveInstanceState(outState));
     }
 
-    public void onRestoreInstanceState(Bundle savedState) {
-        holdersStream().forEach(presenterHolder -> presenterHolder.viewState.onRestoreInstanceState(savedState));
+    void onRestoreInstanceState(Bundle savedState) {
+        holdersStream().forEach(presenterHolder -> presenterHolder.onRestoreInstanceState(savedState));
     }
 
-    public boolean onBackPressed() {
+    boolean onBackPressed() {
         return holdersStream().anyMatch(
-                presenterHolder -> presenterHolder.presenter.onBackPressed()
+                PresenterHolder::onBackPressed
         );
     }
 
-    public void onDestroy() {
-        holdersStream().forEach(presenterHolder -> presenterHolder.viewState.removeView());
+    void onDestroy() {
+        holdersStream().forEach(PresenterHolder::onDestroy);
+    }
+
+    void onFinish() {
+        holdersStream().forEach(PresenterHolder::onFinish);
     }
 
     @NonNull
@@ -62,11 +64,11 @@ public class MvpController {
         return Stream.of(holders);
     }
 
-    public boolean isInitialized() {
+    boolean isInitialized() {
         return isInitialized;
     }
 
-    public void setInitialized() {
+    void setInitialized() {
         isInitialized = true;
     }
 
@@ -74,8 +76,10 @@ public class MvpController {
         private final Presenter<VIEW> presenter;
         private final Class<VIEW> typeOfView;
         private ViewState<VIEW> viewState;
+        private boolean created = false;
 
-        public PresenterHolder(Presenter<VIEW> presenter, Class<VIEW> typeOfView) {
+
+        PresenterHolder(Presenter<VIEW> presenter, Class<VIEW> typeOfView) {
             this.presenter = presenter;
             this.typeOfView = typeOfView;
         }
@@ -93,10 +97,47 @@ public class MvpController {
                 throw new WrongViewException(description);
             }
         }
+
+        public void onCreate(Bundle savedState) {
+            if (!created) {
+                created = true;
+                viewState.onCreate(savedState);
+            }
+        }
+
+        public void onStart(Activity activityContext) {
+            presenter.onStart();
+            viewState.onStart(activityContext);
+        }
+
+        public void onStop() {
+            viewState.onStop();
+        }
+
+        public void onSaveInstanceState(Bundle outState) {
+            viewState.onSaveInstanceState(outState);
+        }
+
+        public void onRestoreInstanceState(Bundle savedState) {
+            viewState.onRestoreInstanceState(savedState);
+        }
+
+        public boolean onBackPressed() {
+            return presenter.onBackPressed();
+        }
+
+        public void onDestroy() {
+            viewState.removeView();
+        }
+
+        public void onFinish() {
+            viewState.onFinish();
+            presenter.onFinish();
+        }
     }
 
-    public static class WrongViewException extends RuntimeException {
-        public WrongViewException(String description) {
+    static class WrongViewException extends RuntimeException {
+        WrongViewException(String description) {
             super(description);
         }
     }

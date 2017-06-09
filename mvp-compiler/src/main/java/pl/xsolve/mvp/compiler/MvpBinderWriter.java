@@ -2,10 +2,8 @@ package pl.xsolve.mvp.compiler;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 
-import java.io.IOException;
 import java.util.stream.Stream;
 
 import javax.annotation.processing.ProcessingEnvironment;

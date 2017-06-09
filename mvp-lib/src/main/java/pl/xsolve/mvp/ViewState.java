@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 
 public abstract class ViewState<VIEW> {
-
     protected VIEW view;
+
     protected Activity activityContext;
 
     public void setView(VIEW view) {
@@ -38,5 +38,8 @@ public abstract class ViewState<VIEW> {
     public void removeView() {
         view = null;
         activityContext = null;
+    }
+
+    public void onFinish() {
     }
 }
